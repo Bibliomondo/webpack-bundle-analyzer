@@ -37,6 +37,9 @@ export default class ModulesTreemap extends Component {
       <div className={s.container}>
         <Sidebar>
           <div className={s.sidebarGroup}>
+            <input onKeyUp={this.handleKeyUp} placeholder="Search terms"/>
+          </div>
+          <div className={s.sidebarGroup}>
             <Switcher label="Treemap sizes"
               items={this.sizeSwitchItems}
               activeItem={activeSizeItem}
@@ -56,7 +59,8 @@ export default class ModulesTreemap extends Component {
           data={visibleChunks}
           weightProp={activeSizeItem.prop}
           onMouseLeave={this.handleMouseLeaveTreemap}
-          onGroupHover={this.handleTreemapGroupHover}/>
+          onGroupHover={this.handleTreemapGroupHover}
+          search={this.state.search}/>
         <Tooltip visible={showTooltip}>
           {tooltipContent}
         </Tooltip>
@@ -112,6 +116,18 @@ export default class ModulesTreemap extends Component {
     } else {
       this.setState({ showTooltip: false });
     }
+  };
+
+  handleKeyUp = (e) => {
+    if (this._keyUpTimeout) {
+      clearTimeout(this._keyUpTimeout);
+    }
+    const search = e.target.value;
+    this._keyUpTimeout = setTimeout(() => this.handleSearch(search), 500);
+  };
+
+  handleSearch = (search) => {
+    this.setState({ search });
   };
 
   get totalChunksSize() {

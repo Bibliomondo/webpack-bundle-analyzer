@@ -24,6 +24,40 @@ export default class Treemap extends Component {
       this.updateData(nextProps.weightProp, nextProps.data);
       this.treemap.set({ dataObject: this.treemapDataObject });
     }
+    if (nextProps.search !== this.props.search) {
+      if (nextProps.search === '') {
+        this.treemap.expose(null);
+      } else {
+        const exposed = [];
+        const findGroups = (groups) => {
+          groups.forEach(group => {
+            if (group.label.indexOf(nextProps.search) > -1) {
+              exposed.push(group);
+            }
+            if (group.groups) {
+              findGroups(group.groups);
+            }
+          });
+        };
+        findGroups(nextProps.data);
+
+        if (!exposed.length) {
+          this.treemap.expose(null);
+        } else {
+          console.log(nextProps.search, exposed);
+          this.treemap.set({
+            groupExposureScale: 1.015,
+            groupExposureShadowSize: 100,
+            groupExposureShadowColor: 'rgba(0, 0, 0, 0.2)',
+            groupExposureZoomMargin: 0.01,
+            exposure: {
+              groups: exposed,
+              exposed: true
+            }
+          });
+        }
+      }
+    }
   }
 
   shouldComponentUpdate() {
